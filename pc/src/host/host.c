@@ -31,6 +31,7 @@ int pc_screen_filter_mode(void) { return g_config.screen_filter; }
 /* "Skip door animations" (decomp system.c bhSysCallDoordemo): 0 the animation, 1 instant (the
    load screen), 2 the animation until a key, mouse button or gamepad button is pressed */
 int pc_skip_door_demo(void) { return g_config.skip_doors == 1; }
+void pc_biorand_set_door_skip(int value) { g_config.skip_doors = value ? 1 : 0; }
 /* "Fast loading" (decomp system.c bhSysCallMonitor/bhSysCallSndMonitor, sdfunc.c pc_load_sound_pack_now) */
 int pc_fast_loading(void) { return g_config.fast_loading; }
 static SDL_AtomicInt presses;   /* key, mouse and gamepad button presses (host_pump_events) */
@@ -322,6 +323,7 @@ int main(int argc, char** argv)
     config_load();
     parse_args(argc, argv);   /* command line overrides the saved settings */
     { extern void variants_load(void); variants_load(); }   /* mods/enemies.ini: custom enemies (variants.h) */
+    { extern void biorand_load(void); biorand_load(); }      /* mods/biorand: BioRand CVX pack */
     ps2_memory_init();
 
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD))

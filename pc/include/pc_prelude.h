@@ -92,6 +92,14 @@ int   pc_fast_loading(void);         /* "Fast loading": room sound packs and tex
 /* mods folder (pc/src/audio/adx.c, docs/modding/README.md "The mods folder"): size of <mods>/name or -1; ADXF handle or NULL */
 int   pc_mod_file_size(const char* name);
 void* pc_mod_open(const char* name);
+/* BioRand CVX pack (mods/biorand, pc/glue/biorand_glue.c): flags from biorand.ini,
+   per-item pickup quantities from ETTY_WORK.wrk_no, the start inventory and the
+   rifle ammo stacking fix. All no-ops without a pack. */
+int   pc_biorand_active(void);
+int   pc_biorand_no_nosferatu_poison(void);
+void  pc_biorand_set_pickup_quantity(unsigned char quantity);
+void  pc_biorand_apply_start_inventory(void);
+extern unsigned char pc_biorand_pickup_quantity;
 int   pc_model_cull(void);      /* actors/objects off-screen are skipped (bhCheckClipModel/Point) */
 int   pc_frame_blend(void);     /* PS2_swap blends the new frame 75% over the previous one (motion trail) */
 unsigned int pc_noclip(void);   /* F2 cheat: player flags whose enemy/wall push bhControlPlayer skips */
