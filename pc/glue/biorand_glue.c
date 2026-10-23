@@ -109,6 +109,11 @@ int pc_biorand_active(void)
     return active;
 }
 
+int pc_biorand_pickup_hack(void)
+{
+    return active && pickup_hack;
+}
+
 int pc_biorand_no_nosferatu_poison(void)
 {
     return active && no_nosferatu_poison;
@@ -182,5 +187,5 @@ void biorand_load(void)
     read_ini(path);
     apply_itemdata();
     if (pickup_hack)
-        host_log("biorand: pickup_hack is not implemented yet\n");
+        host_log("biorand: pickup hack reads the item record type\n");
 }

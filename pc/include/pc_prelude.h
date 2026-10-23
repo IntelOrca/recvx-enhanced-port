@@ -96,6 +96,7 @@ void* pc_mod_open(const char* name);
    per-item pickup quantities from ETTY_WORK.wrk_no, the start inventory and the
    rifle ammo stacking fix. All no-ops without a pack. */
 int   pc_biorand_active(void);
+int   pc_biorand_pickup_hack(void);
 int   pc_biorand_no_nosferatu_poison(void);
 void  pc_biorand_set_pickup_quantity(unsigned char quantity);
 void  pc_biorand_apply_start_inventory(void);
