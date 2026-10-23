@@ -33,30 +33,18 @@
    (docs/modding/README.md "The mods folder"): <mods>/NAME for files opened by name (room files RM_SRRC.RDX, also names the
    disc does not have, and plain ISO files), <mods>/<AFS file>/<id> for entries of AFS archives
    (e.g. mods/MRY.AFS/12). */
-static FILE* mod_open_in(const char* dir, const char* name, uint32_t* size, char* path, size_t npath)
+static FILE* mod_open_path(const char* name, uint32_t* size, char* path, size_t npath)
 {
+    static const char* dir;
     FILE* f;
-    if (snprintf(path, npath, "%s/%s", dir, name) >= (int)npath) return NULL;
+    if (!dir) dir = SDL_getenv("RECVX_MODS") ? SDL_getenv("RECVX_MODS") : "mods";
+    while (*name == '\\' || *name == '/') name++;
+    snprintf(path, npath, "%s/%s", dir, name);
     if (!(f = pc_fopen(path, "rb"))) return NULL;
     fseek(f, 0, SEEK_END);
     *size = (uint32_t)ftell(f);
     host_log("mods: %s replaces the disc file (%u bytes)\n", path, *size);
     return f;
-}
-
-static FILE* mod_open_path(const char* name, uint32_t* size, char* path, size_t npath)
-{
-    static const char* dir;
-    static char layer[1024];
-    FILE* f;
-    if (!dir)
-    {
-        dir = SDL_getenv("RECVX_MODS") ? SDL_getenv("RECVX_MODS") : "mods";
-        snprintf(layer, sizeof(layer), "%s/biorand", dir);
-    }
-    while (*name == '\\' || *name == '/') name++;
-    if ((f = mod_open_in(dir, name, size, path, npath))) return f;
-    return mod_open_in(layer, name, size, path, npath);
 }
 static FILE* mod_open(const char* name, uint32_t* size) { char path[512]; return mod_open_path(name, size, path, sizeof path); }
 

@@ -54,9 +54,6 @@ __attribute__((constructor)) static void opts_env(void)
 const EnemyOpts* enemy_opts(void)
 {
     static const EnemyOpts none;
-#ifdef RECVX_BIORAND
-    return &none;   /* the pack's room files already have their enemies */
-#endif
     if (coop_is_guest()) return have_host_opts ? &host_opts : &none;
     return &g_enemy_opts;
 }
