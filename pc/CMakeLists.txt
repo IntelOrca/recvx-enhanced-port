@@ -90,6 +90,10 @@ endforeach()
 file(GLOB GLUE_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/glue/*.c)
 
 add_library(recvx_game OBJECT ${GAME_SOURCES} ${GLUE_SOURCES})
+option(RECVX_BIORAND "BioRand CVX pack: decomp item hooks and no port enemy options" OFF)
+if(RECVX_BIORAND)
+    target_compile_definitions(recvx_game PRIVATE RECVX_BIORAND)
+endif()
 target_compile_definitions(recvx_game PRIVATE main=recvx_game_main)
 target_include_directories(recvx_game PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include

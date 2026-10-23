@@ -35,7 +35,6 @@ void spawn_keep_texlist(const NJS_TEXLIST* l);
 void bhCheckEneWorkNum(void);   /* eneset.h */
 
 EnemyOpts g_enemy_opts = { .variety = 1, .events = 1 };   /* settings (F1, recvx.ini) */
-extern int pc_biorand_active(void);                         /* pc/glue/biorand_glue.c */
 static EnemyOpts host_opts;             /* a co-op guest's: the host's */
 static int have_host_opts;
 int enemy_room_gen;                     /* room loads so far */
@@ -55,7 +54,9 @@ __attribute__((constructor)) static void opts_env(void)
 const EnemyOpts* enemy_opts(void)
 {
     static const EnemyOpts none;
-    if (pc_biorand_active()) return &none;   /* the pack's room files already have their enemies */
+#ifdef RECVX_BIORAND
+    return &none;   /* the pack's room files already have their enemies */
+#endif
     if (coop_is_guest()) return have_host_opts ? &host_opts : &none;
     return &g_enemy_opts;
 }
