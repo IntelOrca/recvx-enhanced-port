@@ -30,9 +30,10 @@
 
 /* ---------------- mods folder ----------------
    Files in $RECVX_MODS (default ./mods) replace disc files without touching the image
-   (docs/modding/README.md "The mods folder"): <mods>/NAME for files opened by name (room files RM_SRRC.RDX, also names the
-   disc does not have, and plain ISO files), <mods>/<AFS file>/<id> for entries of AFS archives
-   (e.g. mods/MRY.AFS/12). */
+   (docs/modding/README.md "The mods folder"): <mods>/NAME for files opened by name (plain ISO files and,
+   for the old room tools, RM_SRRC.RDX), <mods>/<AFS file>/<id> for entries of AFS archives
+   (e.g. mods/MRY.AFS/12). Rooms are entries of RDX_LNK.AFS (mods/RDX_LNK.AFS/<index>); the room
+   table order is the index, so a room name is mapped to it below. */
 static FILE* mod_open_in(const char* dir, const char* name, uint32_t* size, char* path, size_t npath)
 {
     FILE* f;
@@ -60,10 +61,30 @@ static FILE* mod_open_path(const char* name, uint32_t* size, char* path, size_t 
 }
 static FILE* mod_open(const char* name, uint32_t* size) { char path[512]; return mod_open_path(name, size, path, sizeof path); }
 
+/* Room files are entries of RDX_LNK.AFS. The room table has the same order in
+   the decomp (rdx_files) and in the biorand pack, so map a room name to its
+   entry. The old RM_SRRC.RDX name is still tried first for the room tools. */
+static int room_afs_name(const char* name, char* path, size_t npath)
+{
+    extern char* rdx_files[205];
+    extern int rdx_image_data_max;
+    int i;
+    for (i = 0; i < rdx_image_data_max; i++) {
+        if (strcmp(name, rdx_files[i]) == 0) {
+            if (snprintf(path, npath, "RDX_LNK.AFS/%d", i) >= (int)npath) return 0;
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int pc_mod_file_size(const char* name)
 {
+    char afs[64];
     uint32_t size;
     FILE* f = mod_open(name, &size);
+    if (!f && room_afs_name(name, afs, sizeof afs))
+        f = mod_open(afs, &size);
     if (!f) return -1;
     fclose(f);
     return (int)size;
@@ -164,8 +185,11 @@ static AdxfFile* open_host(FILE* hf, uint32_t size)
 /* a file of the mods folder by name, NULL if there is none (adxwrap.c OpenAfsIsoFile) */
 void* pc_mod_open(const char* name)
 {
+    char afs[64];
     uint32_t size;
     FILE* hf = mod_open(name, &size);
+    if (!hf && room_afs_name(name, afs, sizeof afs))
+        hf = mod_open(afs, &size);
     return hf ? open_host(hf, size) : NULL;
 }
 

@@ -39,7 +39,8 @@ Related: [../ACTORS.md](../ACTORS.md) (models, skeletons, motions, enemy records
 
 | Mods file | Replaces | Notes |
 |---|---|---|
-| `RM_SRRC.RDX` | room S (stage 0..9), RR (room 00..99), C (case 0..9) | replaces the disc's room, or **adds** a room the disc does not have; packed (LZ) like the disc files. Hooks: `ps2_sg_gd.c gdFsGetDirInfo` (size), `adxwrap.c OpenAfsIsoFile` (open) |
+| `RDX_LNK.AFS/<index>` | entry `<index>` of the room archive, in the game's room-table order (the same order as `RM_*.RDX`; see `ps2_dvd_image.c rdx_files`) | replaces the disc's room, or **adds** a room the disc does not have; stored PRS (literal-only) is valid. The port maps a room name to this entry, so `RM_SRRC.RDX` still works for the old room tools |
+| `RM_SRRC.RDX` | room S (stage 0..9), RR (room 00..99), C (case 0..9) | legacy name: replaces the disc's room by name, or **adds** a room the disc does not have; packed (LZ) like the disc files |
 | `RM_SRRC.SPQ.key` | room sound bank key | text file with one decimal retail key, e.g. `60` = RM_0060's bank. Log: `mods: room sound key 1150 uses 0060`. Not recursive; an invalid file is ignored |
 | `<ARCHIVE>/<index>` | entry *index* of an AFS archive opened by partition, e.g. `MRY.AFS/76` | sound banks, door animations, map files, player/weapon files, streamed ADX music and voices (ADX, at most 2 channels). Only ADX streams are tested in game |
 | `<NAME>` | a plain disc file opened through `ADXF_Open` | |

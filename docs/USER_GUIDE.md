@@ -576,8 +576,9 @@ and **HD textures: UI** (on).
 ## Mods
 
 Files in the `mods` folder (next to where you start the game, or `RECVX_MODS=DIR`) replace disc
-files without touching the image: `mods/NAME` for files opened by name (for example room files
-`RM_xxxx.RDX`) and `mods/<archive>.AFS/<index>` for entries of AFS archives. The log names
+files without touching the image: `mods/NAME` for files opened by name (for example legacy room
+files `RM_xxxx.RDX`) and `mods/<archive>.AFS/<index>` for entries of AFS archives (rooms live in
+`RDX_LNK.AFS`). The log names
 every replaced file. `mods/enemies.ini` adds custom enemies (a type's moves with another look,
 tougher, faster or bigger; for the spawner and the Wild randomizer), see [ENEMIES.md](ENEMIES.md)
 "Enemy variants". Modding reference and tools: [modding/README.md](modding/README.md).
