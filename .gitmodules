@@ -1,4 +1,4 @@
 [submodule "decomp"]
 	path = decomp
 	url = https://github.com/IntelOrca/recvx-decomp.git
-	branch = pc-port
+	branch = biorand-pc

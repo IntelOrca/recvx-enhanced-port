@@ -2691,6 +2691,13 @@ static int important_item(int id)
 }
 static int own_copies(void) { return !individual() && rule(OPT_IMPORTANT); }
 #define LIGHTER 55                      /* the STANDARD slot's lighter: the story hands it out */
+extern unsigned char override_pickup_quantity;   /* sub1.c: floor pickup quantity */
+/* The same split-id rule as bhCheckExmAtari/GetItem: a non-zero type below the
+   item table size is the pickup id; otherwise the retail id. */
+static int pickup_item_id(const O_WRK* op)
+{
+    return (op->type && op->type < 156) ? op->type : op->id;
+}
 /* Shared loot is one pool (docs/COOP.md "Loot modes"): an item is the taker's alone, its spot is gone for both.
    Reaching the partner as well: key items (story progress) and the lighter; with "important items for both"
    weapons and ink ribbons (each player's own copy: taken from the floor by each, from an event given to both). */
@@ -2702,7 +2709,7 @@ void coop_item_taken(int bit, int etc)
 {
     int id;
     if (!sys || !rom || !sys->itwp || etc >= rom->etc_n || rom->etcp[etc].prm0 >= ITWP_N || !own_copies()) return;
-    id = sys->itwp[rom->etcp[etc].prm0].id;
+    id = pickup_item_id(&sys->itwp[rom->etcp[etc].prm0]);
     if (!important_item(id == 130 ? 35 : id)) return;   /* (130 is 35, as GetItem) */
     sys->itm[IMP_SPOTS + (bit >> 5)] |= 0x80000000u >> (bit & 31);
     host_log("coop: took item %d (flag %d): important items for both, the partner's copy stays\n", id, bit);
@@ -2747,6 +2754,7 @@ static int give_item(int item)
     swork.statusflg &= ~0x100;
     sys->cb_flg = (cb | 0x800) & ~(0x1000000 | 0x400 | 0x8000);
     sys->sb_id = item;
+    override_pickup_quantity = 0;   /* this is a grant, not a floor pickup */
     GetItem(&st);
     swork.statusflg = sf;
     sys->cb_flg = cb;
@@ -4914,7 +4922,7 @@ static int grant_model(int item, int i)
     if (disp == 131) disp = 5;    /* sub1.c: the Enhanced Handgun shows the handgun's */
     if (disp == 136) disp = 33;
     for (k = 0; k < rom->itm_n && k < ITWP_N; k++)
-        if (sys->itwp[k].id == item) return -1;   /* (one of ours: grant_slot found it, or not to be shown) */
+        if (pickup_item_id(&sys->itwp[k]) == item) return -1;   /* (one of ours: grant_slot found it, or not to be shown) */
     if (slot >= ITWP_N || slot >= 32) { host_log("coop: no free item slot here for the partner's %s\n", item_name((unsigned)item << 16)); return -1; }
     actor_tex_free(&entries, &heap);
     if (entries < 16 || heap < (1 << 20) || sys->endp - sys->memp < (256 << 10)) {
