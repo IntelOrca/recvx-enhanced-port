@@ -4,7 +4,7 @@ name: build
 
 on:
   push:
-    branches: [main]
+    branches: [main, biorand-pc]
     tags: ['v*']
   pull_request:
   workflow_dispatch:
